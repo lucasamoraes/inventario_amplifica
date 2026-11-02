@@ -3,7 +3,14 @@ declare(strict_types=1);
 
 $configFile = dirname(__DIR__) . '/config.php';
 if (!is_file($configFile)) { http_response_code(500); exit('Copie config.example.php para config.php e configure o banco.'); }
-$config = require $configFile;
+try {
+    $config = require $configFile;
+} catch (Throwable $error) {
+    error_log('Inventario: config.php invalido - '.$error->getMessage());
+    http_response_code(500);
+    exit('O arquivo config.php possui um erro de sintaxe. Revise aspas, virgulas e a senha do banco.');
+}
+if(!is_array($config)||empty($config['app'])||empty($config['db'])){http_response_code(500);exit('O arquivo config.php esta incompleto.');}
 date_default_timezone_set($config['app']['timezone'] ?? 'America/Sao_Paulo');
 $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 session_name($config['app']['session_name'] ?? 'inventory_session');
