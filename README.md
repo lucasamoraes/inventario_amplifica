@@ -12,6 +12,8 @@ O arquivo `hosting_database.sql` contém a estrutura e os dados atuais do ambien
 
 Se o importador AJAX do phpMyAdmin apresentar erro de JavaScript, envie `database/hosting_database.zip` na aba **Importar**. O ZIP contém o mesmo SQL validado e costuma evitar a falha da interface do cPanel.
 
+Para uma instalação que já possui o banco importado, execute apenas `database/platform_admin_migration.sql` para criar a administração da Amplificati. A entrada fica em `/platform/login` e a senha temporária deve ser trocada no primeiro acesso.
+
 ### Git Version Control do cPanel
 
 Clone o repositório em uma pasta vazia, por exemplo `repositories/inventario_amplifica`. Não use diretamente a pasta do subdomínio, pois ela já possui arquivos. Depois, na tela do repositório no cPanel, use **Update from Remote** e **Deploy HEAD Commit**. O arquivo `.cpanel.yml` publicará os arquivos em `/home1/luca6802/inventario.amplificati.com.br/` sem enviar ou substituir o `config.php`.

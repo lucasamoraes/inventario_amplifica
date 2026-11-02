@@ -207,6 +207,28 @@ LOCK TABLES `login_attempts` WRITE;
 INSERT INTO `login_attempts` VALUES (1,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 12:51:19'),(2,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 12:51:32'),(3,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 12:54:37'),(4,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 12:55:06'),(5,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 12:56:53'),(6,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 13:02:51'),(7,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 13:06:16'),(8,'admin@amplificati.test','127.0.0.1',1,'2026-10-31 13:08:47'),(9,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:05:37'),(10,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:05:56'),(11,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:06:18'),(12,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:12:48'),(13,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:13:10'),(14,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:32:13'),(15,'admin@amplificati.test','127.0.0.1',1,'2026-11-01 12:32:24'),(16,'admin@amplificati.test','::1',1,'2026-11-02 14:32:38'),(17,'admin@amplificati.test','::1',1,'2026-11-02 14:33:41');
 /*!40000 ALTER TABLE `login_attempts` ENABLE KEYS */;
 UNLOCK TABLES;
+DROP TABLE IF EXISTS `platform_admins`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `platform_admins` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(160) NOT NULL,
+  `email` varchar(190) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `must_change_password` tinyint(1) NOT NULL DEFAULT 1,
+  `last_login_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+LOCK TABLES `platform_admins` WRITE;
+/*!40000 ALTER TABLE `platform_admins` DISABLE KEYS */;
+INSERT INTO `platform_admins` VALUES (1,'Lucas Moraes','lucas.moraes@amplificati.com.br','$2y$10$Ip.rGIXcmCgM5u9WJFpr6eTnOUl3g0TKRZBdXJo.Jhrld/uM4mBRG',1,1,'2026-11-02 16:08:33','2026-11-02 16:08:20');
+/*!40000 ALTER TABLE `platform_admins` ENABLE KEYS */;
+UNLOCK TABLES;
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
