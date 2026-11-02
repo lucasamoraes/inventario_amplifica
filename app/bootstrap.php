@@ -43,7 +43,16 @@ function require_manage(): void { require_auth(); if(!can_manage()){http_respons
 function tenant_id(): int { return (int)(user()['company_id']??0); }
 function query(string $sql,array $params=[]): PDOStatement { $s=db()->prepare($sql);$s->execute($params);return $s; }
 function audit(string $action,string $entityType,?int $entityId=null,array $details=[]): void { query('INSERT INTO audit_logs(company_id,user_id,action,entity_type,entity_id,details_json,ip_address) VALUES(?,?,?,?,?,?,?)',[tenant_id(),user()['id']??null,$action,$entityType,$entityId,json_encode($details,JSON_UNESCAPED_UNICODE),$_SERVER['REMOTE_ADDR']??null]); }
-function verify_captcha(string $token): bool { $secret=(string)config('captcha.secret_key'); if($secret==='') return config('app.env')!=='production'; if($token==='') return false; $data=http_build_query(['secret'=>$secret,'response'=>$token,'remoteip'=>$_SERVER['REMOTE_ADDR']??'']); $ctx=stream_context_create(['http'=>['method'=>'POST','header'=>'Content-Type: application/x-www-form-urlencoded','content'=>$data,'timeout'=>8]]); $raw=@file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify',false,$ctx); return $raw && !empty(json_decode($raw,true)['success']); }
+function verify_captcha(string $token,string $expectedAction='company_login'): bool {
+    $secret=(string)config('captcha.secret_key');
+    if($secret==='') return config('app.env')!=='production';
+    if($token==='') return false;
+    $payload=http_build_query(['secret'=>$secret,'response'=>$token,'remoteip'=>$_SERVER['REMOTE_ADDR']??'']);$raw=false;
+    if(function_exists('curl_init')){$curl=curl_init('https://www.google.com/recaptcha/api/siteverify');curl_setopt_array($curl,[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>$payload,CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>8,CURLOPT_HTTPHEADER=>['Content-Type: application/x-www-form-urlencoded']]);$raw=curl_exec($curl);curl_close($curl);}
+    if(!$raw){$ctx=stream_context_create(['http'=>['method'=>'POST','header'=>'Content-Type: application/x-www-form-urlencoded','content'=>$payload,'timeout'=>8]]);$raw=@file_get_contents('https://www.google.com/recaptcha/api/siteverify',false,$ctx);}
+    if(!$raw)return false;$result=json_decode($raw,true);$minimum=(float)(config('captcha.min_score')??0.5);
+    return !empty($result['success'])&&($result['action']??'')===$expectedAction&&(float)($result['score']??0)>=$minimum;
+}
 function criticality(array $pc,array $disks): array {
     if(!array_key_exists('critical_score_threshold',company()??[])) refresh_company();$settings=company()??[];
     $reasons=[];$score=0;$year=(int)($pc['manufacture_year']??0);$ram=(int)($pc['ram_gb']??0);$cpu=strtolower($pc['processor']??'');$win=strtolower($pc['windows_version']??'');

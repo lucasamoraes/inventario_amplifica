@@ -16,6 +16,20 @@ Para uma instalação que já possui o banco importado, execute apenas `database
 
 Para adicionar os cadastros de situação e Windows, os filtros e a separação dos pentes de memória em um banco existente, importe uma única vez `database/equipment_catalogs_migration.sql`.
 
+### Google reCAPTCHA v3
+
+Cadastre `inventario.amplificati.com.br` no Google reCAPTCHA v3 e configure no `config.php`:
+
+```php
+'captcha' => [
+    'site_key' => 'CHAVE_PUBLICA',
+    'secret_key' => 'CHAVE_SECRETA',
+    'min_score' => 0.5,
+],
+```
+
+Em produção, mantenha também `'env' => 'production'`. A chave secreta nunca deve ser enviada ao Git.
+
 ### Git Version Control do cPanel
 
 Clone o repositório em uma pasta vazia, por exemplo `repositories/inventario_amplifica`. Não use diretamente a pasta do subdomínio, pois ela já possui arquivos. Depois, na tela do repositório no cPanel, use **Update from Remote** e **Deploy HEAD Commit**. O arquivo `.cpanel.yml` publicará os arquivos em `/home1/luca6802/inventario.amplificati.com.br/` sem enviar ou substituir o `config.php`.
