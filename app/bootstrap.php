@@ -15,7 +15,12 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
 
 function config(?string $key=null): mixed { global $config; if ($key===null) return $config; $v=$config; foreach(explode('.',$key) as $p) $v=$v[$p]??null; return $v; }
-function base_path(): string { $path=(string)(parse_url((string)config('app.url'),PHP_URL_PATH)??''); return rtrim($path,'/'); }
+function base_path(): string {
+    $configured=rtrim((string)(parse_url((string)config('app.url'),PHP_URL_PATH)??''),'/');
+    $request=(string)(parse_url($_SERVER['REQUEST_URI']??'/',PHP_URL_PATH)??'/');
+    if($configured!==''&&$request!==$configured&&!str_starts_with($request,$configured.'/')) return '';
+    return $configured;
+}
 function app_url(string $path='/'): string { $path='/'.ltrim($path,'/'); return base_path().($path==='/'?'/':$path); }
 function db(): PDO { static $pdo; if($pdo) return $pdo; $d=config('db'); $dsn="mysql:host={$d['host']};port={$d['port']};dbname={$d['name']};charset={$d['charset']}"; return $pdo=new PDO($dsn,$d['user'],$d['pass'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]); }
 function e(mixed $v): string { return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8'); }
