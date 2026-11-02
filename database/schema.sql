@@ -33,7 +33,7 @@ CREATE TABLE computers (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, company_id BIGINT UNSIGNED NOT NULL,
  collected_at DATETIME NULL, computer_name VARCHAR(120) NOT NULL, sector VARCHAR(140) NULL, assigned_user VARCHAR(160) NULL,
  manufacturer VARCHAR(100) NULL, model VARCHAR(160) NULL, manufacture_year SMALLINT NULL, service_tag VARCHAR(120) NULL,
- processor VARCHAR(255) NULL, ram_gb SMALLINT NULL, ram_slots_detail VARCHAR(255) NULL,
+ processor VARCHAR(255) NULL, ram_gb SMALLINT NULL, ram_sticks_count TINYINT UNSIGNED NULL, ram_per_stick_gb SMALLINT UNSIGNED NULL, ram_slots_detail VARCHAR(255) NULL,
  windows_version VARCHAR(160) NULL, local_ip VARCHAR(45) NULL, mac_address VARCHAR(30) NULL, location VARCHAR(140) NULL,
  asset_status VARCHAR(80) NOT NULL DEFAULT 'Em uso', notes TEXT NULL,
  created_by BIGINT UNSIGNED NULL, updated_by BIGINT UNSIGNED NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,7 +46,7 @@ CREATE TABLE computers (
 
 CREATE TABLE catalog_items (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, company_id BIGINT UNSIGNED NOT NULL,
- catalog_type ENUM('sector','location','asset_status') NOT NULL, name VARCHAR(140) NOT NULL, active TINYINT(1) NOT NULL DEFAULT 1,
+ catalog_type ENUM('sector','location','asset_status','windows_version') NOT NULL, name VARCHAR(140) NOT NULL, active TINYINT(1) NOT NULL DEFAULT 1,
  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
  UNIQUE KEY uq_catalog_item(company_id,catalog_type,name),
  CONSTRAINT fk_catalog_company FOREIGN KEY(company_id) REFERENCES companies(id) ON DELETE CASCADE
